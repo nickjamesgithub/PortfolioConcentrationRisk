@@ -13,22 +13,17 @@ make_plots = True
 
 # Import data
 df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Market_concentration_risk_paper\Market_Capitalisation_Data.csv")
+df.index = df["Name"]
+df = df.iloc[:,1:]
+
 # Replace 'data unavailable' with NaN
 df.replace('Data Unavailable', np.nan, inplace=True)
 # Convert columns to numeric, forcing errors to NaN
 df = df.apply(pd.to_numeric, errors='coerce')
+df_clean = df.dropna(axis=0)
 
 # Compute total market capitalization for each date
-total_market_cap = df.sum(axis=0, skipna=True)
-
-# Compute the number of NaNs in each column
-num_nans = df.isna().sum(axis=0)
-
-# Total number of companies (rows)
-total_companies = df.shape[0]
-
-# Compute adjustment factor for each column
-adjustment_factor = 1 - (num_nans / total_companies)
+total_market_cap = df_clean.sum(axis=0, skipna=True)
 
 # Define different values of top_n to consider
 top_n_values = [3, 5, 10, 15]
@@ -40,11 +35,11 @@ plt.figure(figsize=(12, 6))
 # Loop over each top_n value
 for top_n, color in zip(top_n_values, colors):
     # Compute the market capitalization of the top_n companies
-    top_market_cap = df.apply(lambda x: x.nlargest(top_n).sum(), axis=0)
+    top_market_cap = df_clean.apply(lambda x: x.nlargest(top_n).sum(), axis=0)
     # Compute the percentage of market capitalization of the top_n companies
     top_market_cap_percentage = (top_market_cap / total_market_cap) * 100
     # Apply adjustment factor
-    adjusted_top_market_cap_percentage = top_market_cap_percentage * adjustment_factor
+    adjusted_top_market_cap_percentage = top_market_cap_percentage
     # Plot the time-varying percentage
     plt.plot(df.columns, adjusted_top_market_cap_percentage, label=f'Top {top_n}', color=color)
 
@@ -59,6 +54,7 @@ if make_plots:
     plt.xticks(np.arange(1, len(df.columns), len(df.columns)//n_dates), rotation=90)
     # Show the plot
     plt.tight_layout()
+    plt.savefig("Market_value_concentration")
     plt.show()
 
 # Raw data
