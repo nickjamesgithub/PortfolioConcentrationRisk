@@ -86,6 +86,7 @@ plt.show()
 plt.plot(opt_weights["GS"], alpha = 0.25)
 plt.plot(opt_weights["MS"], alpha = 0.25)
 plt.title("High association weight vector")
+plt.savefig("High_association_alignment")
 plt.show()
 
 # Plot dendrogram
