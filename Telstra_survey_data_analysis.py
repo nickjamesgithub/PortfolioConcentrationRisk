@@ -21,7 +21,7 @@ from sklearn.preprocessing import LabelEncoder
 # Read in data
 # data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Telstra\Survey_data.csv")
 data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Telstra\survey_responses.csv")
-make_plots = False
+make_plots = True
 
 def kendall_tau_distance_matrix(data):
     def kendall_tau_distance(u, v):
@@ -83,7 +83,7 @@ data["Q1_encode"] = q1_encoded
 q2_encoded = data["Q2"]
 data["Q2_encode"] = q2_encoded
 # Q3
-q3_encoded = data["Q3"].replace(["Female", "Male", "Non-binary"], [0,1,2])
+q3_encoded = data["Q3"].replace(["Male", "Female", "Non-binary"], [0,1,2])
 data["Q3_encode"] = q3_encoded
 # Q4
 q4_encoded = data["Q4"].replace(['Less than $15,000', '$15,000 to $29,999', '$30,000 to $44,999','$45,000 to $59,999',
@@ -159,7 +159,7 @@ data = pd.concat([data, q14_encoded], axis=1)
 q14_encoded_transposed = q14_encoded.T
 
 # Q15 - Cosine similarity
-# Identify columns that start with 'Q5' exactly
+# Identify columns that start with 'Q15' exactly
 q15_columns = [col for col in data.columns if col.startswith('Q15') and col[3:4].isdigit() == False]
 # Create a new DataFrame with the renamed columns
 q15_encoded = data[q15_columns].apply(pd.to_numeric, errors='coerce').fillna(0)
@@ -353,7 +353,7 @@ matrix_q36 = cosine_similarity_matrix(q36_encoded)
 matrix_q37 = cosine_similarity_matrix(q37_encoded)
 matrix_q38 = cosine_similarity_matrix(q38_encoded)
 matrix_q43 = cosine_similarity_matrix(q43_encoded)
-matrix_q44 = cosine_similarity_matrix(q43_encoded)
+matrix_q44 = cosine_similarity_matrix(q44_encoded)
 
 # Compute affinity matrices
 distance_matrices = convert_to_affinity(matrix_q1, matrix_q3, matrix_q4,
@@ -415,6 +415,8 @@ if make_plots:
     dendrogram_plot_test(matrix_q8, "Q8_innate", "Survey", np.linspace(1,1750,1750))
     # KPCs - 5
     dendrogram_plot_test(matrix_q14, "Q14_KPC", "Survey", np.linspace(1,1750,1750))
+    # Activity - 5
+    dendrogram_plot_test(matrix_q15, "Q15_Activity", "Activity", np.linspace(1,1750,1750))
     # Speed - 5
     dendrogram_plot_test(matrix_q16, "Q16_speed", "Survey", np.linspace(1, 1750, 1750))
     # Budget - 5

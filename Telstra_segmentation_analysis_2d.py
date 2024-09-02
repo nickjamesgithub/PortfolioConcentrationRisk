@@ -33,37 +33,34 @@ cosine_list = ["Q15_encode"]
 
 # Choose axes to condition upon
 axis_1 = sorted(data["KPC_cluster"].unique())
-axis_2 = sorted(data["Budget_cluster"].unique())
-axis_3 = sorted(data["Switching_cluster"].unique())
+axis_2 = sorted(data["Switching_cluster"].unique())
 
 # Calculate the total number of combinations
-num_combinations = len(axis_1) * len(axis_2) # * len(axis_3)
+num_combinations = len(axis_1) * len(axis_2)
 
 # Initialize the 3D matrix to store affinity matrices for each feature
 all_affinity_matrices = np.zeros((len(feature_list), num_combinations, num_combinations))
 
 # Generate all possible combinations of (i, j, k)
-combinations = [(i, j, k) for i in range(len(axis_1)) for j in range(len(axis_2)) for k in range(len(axis_3))]
+combinations = [(i, j) for i in range(len(axis_1)) for j in range(len(axis_2))]
 
 # Iterate over each feature and compute distances
 for f, feature in enumerate(feature_list):
     print("Feature ", feature)
     distance_matrix = np.zeros((num_combinations, num_combinations))  # Initialize distance matrix for this feature
 
-    for idx1, (i1, j1, k1) in enumerate(combinations):
-        for idx2, (i2, j2, k2) in enumerate(combinations):
+    for idx1, (i1, j1) in enumerate(combinations):
+        for idx2, (i2, j2) in enumerate(combinations):
             # Choose first and second slice based on the two different triples
             slice_1 = data.loc[
                 (data["KPC_cluster"] == axis_1[i1]) &
-                (data["Budget_cluster"] == axis_2[j1]) &
-                (data["Switching_cluster"] == axis_3[k1]),
+                (data["Switching_cluster"] == axis_2[j1]),
                 data.columns[data.columns.str.startswith(feature)]
             ].values
 
             slice_2 = data.loc[
                 (data["KPC_cluster"] == axis_1[i2]) &
-                (data["Budget_cluster"] == axis_2[j2]) &
-                (data["Switching_cluster"] == axis_3[k2]),
+                (data["Switching_cluster"] == axis_2[j2]),
                 data.columns[data.columns.str.startswith(feature)]
             ].values
 
@@ -108,9 +105,8 @@ dense_affinity_matrix = np.sum(all_affinity_matrices, axis=0)
 
 # Generate all possible combinations of (i, j, k)
 axis_1 = sorted(data["KPC_cluster"].unique())
-axis_2 = sorted(data["Budget_cluster"].unique())
-axis_3 = sorted(data["Switching_cluster"].unique())
-combinations = [(i, j, k) for i in range(len(axis_1)) for j in range(len(axis_2)) for k in range(len(axis_3))]
+axis_2 = sorted(data["Switching_cluster"].unique())
+combinations = [(i, j) for i in range(len(axis_1)) for j in range(len(axis_2))]
 
 # Plotting the summed affinity matrix
 plt.figure(figsize=(10, 8))
@@ -118,8 +114,8 @@ plt.imshow(dense_affinity_matrix, cmap='viridis', interpolation='none')
 plt.colorbar(label='Summed Affinity')
 
 # Annotating the plot with the segment indices
-for idx, (i, j, k) in enumerate(combinations):
-    plt.text(idx, idx, f'({i},{j},{k})', ha='center', va='center', color='white', fontsize=8)
+for idx, (i, j) in enumerate(combinations):
+    plt.text(idx, idx, f'({i},{j})', ha='center', va='center', color='white', fontsize=8)
 
 plt.title('Summed Affinity Matrix with Segment Indices')
 plt.xlabel('Segment Index')
@@ -132,19 +128,16 @@ dendrogram_plot_test(dense_affinity_matrix, "_Conditional_segmentation_numbered_
 
 # Define the labels for each axis
 axis_1_labels = ["Price", "Performance", "Convenience", "Offering"]  # Replace with actual labels for axis_1
-axis_2_labels = ["Low_B", "High_B", "Medium_B"]  # Replace with actual labels for axis_2
-axis_3_labels = ["Switch_0-2", "Switch_8+", "Switch_2-7"]  # Replace with actual labels for axis_3
+axis_2_labels = ["Switch_0-2", "Switch_8+", "Switch_2-7"]  # Replace with actual labels for axis_2
 
 # Check that the number of labels matches the number of unique elements in each axis
 if len(axis_1_labels) != len(axis_1):
     raise ValueError("The length of axis_1_labels must match the number of unique elements in axis_1.")
 if len(axis_2_labels) != len(axis_2):
     raise ValueError("The length of axis_2_labels must match the number of unique elements in axis_2.")
-if len(axis_3_labels) != len(axis_3):
-    raise ValueError("The length of axis_3_labels must match the number of unique elements in axis_3.")
 
 # Generate new combinations using the labels
-new_combinations = [(axis_1_labels[i], axis_2_labels[j], axis_3_labels[k]) for i in range(len(axis_1)) for j in range(len(axis_2)) for k in range(len(axis_3))]
+new_combinations = [(axis_1_labels[i], axis_2_labels[j]) for i in range(len(axis_1)) for j in range(len(axis_2))]
 
 # Example: Replace the old combination tuples in the plot annotation with new labels
 plt.figure(figsize=(10, 8))
@@ -152,8 +145,8 @@ plt.imshow(dense_affinity_matrix, cmap='viridis', interpolation='none')
 plt.colorbar(label='Summed Affinity')
 
 # Annotating the plot with the new combination labels
-for idx, (label1, label2, label3) in enumerate(new_combinations):
-    plt.text(idx, idx, f'({label1},{label2},{label3})', ha='center', va='center', color='white', fontsize=8)
+for idx, (label1, label2) in enumerate(new_combinations):
+    plt.text(idx, idx, f'({label1},{label2})', ha='center', va='center', color='white', fontsize=8)
 
 plt.title('Summed Affinity Matrix with New Label Combinations')
 plt.xlabel('Segment Index')
@@ -162,10 +155,10 @@ plt.savefig("Dense_affinity_matrix_with_new_label_combinations")
 plt.show()
 
 # Dendrogram segmentation with new combination labels
-dendrogram_plot_test(dense_affinity_matrix, "_Conditional_segmentation_theme_", "Survey", new_combinations)
+dendrogram_plot_test(dense_affinity_matrix, "_Conditional_segmentation_theme_2d", "Survey", new_combinations)
 
 # K means
-kmeans = KMeans(n_clusters=8, random_state=42).fit(dense_affinity_matrix)
+kmeans = KMeans(n_clusters=5, random_state=42).fit(dense_affinity_matrix)
 labels_affinity = kmeans.labels_
 
 # Map each combination to its corresponding cluster label
@@ -176,7 +169,7 @@ data['Cluster_Label'] = np.nan
 # Iterate through each row in the original data and assign the corresponding cluster label
 for i, row in data.iterrows():
     # Get the values for axis_1, axis_2, and axis_3 for this row
-    comb = (row['KPC_cluster'], row['Budget_cluster'], row['Switching_cluster'])
+    comb = (row['KPC_cluster'], row['Switching_cluster'])
     # Assign the corresponding cluster label based on the combination
     if comb in combination_to_cluster:
         data.at[i, 'Cluster_Label'] = combination_to_cluster[comb]
@@ -185,5 +178,7 @@ for i, row in data.iterrows():
 data['Cluster_Label'] = data['Cluster_Label'].astype(int)
 # Now, the 'Cluster_Label' column in the data DataFrame contains the appropriate cluster label for each customer
 # Save the updated DataFrame (optional)
-data.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Telstra\Data_with_cluster_projections.csv", index=False)
+data.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Telstra\Data_with_cluster_projections_2d.csv", index=False)
 
+x=1
+y=2
