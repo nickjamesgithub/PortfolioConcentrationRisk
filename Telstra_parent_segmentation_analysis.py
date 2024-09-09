@@ -181,7 +181,7 @@ for cluster in cluster_labels:
     cluster_data = data[data['Cluster_Label'] == cluster]
 
     # Group by speed tiers and compute the mean
-    avg_price_per_speed = cluster_data.groupby(speed_col)['Q17_mapped'].mean()
+    avg_price_per_speed = cluster_data.groupby(speed_col)['Q17_mapped'].mean() # mean
 
     # Map the mean prices back to the nearest price tier using the mappings dictionary
     avg_price_per_speed_mapped = avg_price_per_speed.map(lambda x: min(mappings[price_col], key=lambda k: abs(k - x)))

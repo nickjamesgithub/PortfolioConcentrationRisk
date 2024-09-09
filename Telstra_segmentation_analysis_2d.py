@@ -180,5 +180,4 @@ data['Cluster_Label'] = data['Cluster_Label'].astype(int)
 # Save the updated DataFrame (optional)
 data.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Telstra\Data_with_cluster_projections_2d.csv", index=False)
 
-x=1
-y=2
+

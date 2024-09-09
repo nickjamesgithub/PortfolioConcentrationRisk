@@ -20,7 +20,8 @@ from sklearn.preprocessing import LabelEncoder
 
 # Read in data
 # data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Telstra\Survey_data.csv")
-data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Telstra\survey_responses.csv")
+data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Telstra\survey_responses_240909.csv")
+data_length = len(data)
 make_plots = True
 
 def kendall_tau_distance_matrix(data):
@@ -412,17 +413,17 @@ segment_matrices = [matrix_q1, matrix_q8, matrix_q11, matrix_q14, matrix_q15, ma
 
 if make_plots:
     # Innate behaviour (Segments) - 4
-    dendrogram_plot_test(matrix_q8, "Q8_innate", "Survey", np.linspace(1,1750,1750))
+    dendrogram_plot_test(matrix_q8, "Q8_innate", "Survey", np.linspace(1,data_length,data_length))
     # KPCs - 5
-    dendrogram_plot_test(matrix_q14, "Q14_KPC", "Survey", np.linspace(1,1750,1750))
+    dendrogram_plot_test(matrix_q14, "Q14_KPC", "Survey", np.linspace(1,data_length,data_length))
     # Activity - 5
-    dendrogram_plot_test(matrix_q15, "Q15_Activity", "Activity", np.linspace(1,1750,1750))
+    dendrogram_plot_test(matrix_q15, "Q15_Activity", "Activity", np.linspace(1,data_length,data_length))
     # Speed - 5
-    dendrogram_plot_test(matrix_q16, "Q16_speed", "Survey", np.linspace(1, 1750, 1750))
+    dendrogram_plot_test(matrix_q16, "Q16_speed", "Survey", np.linspace(1, data_length, data_length))
     # Budget - 5
-    dendrogram_plot_test(matrix_q17, "Q17_budget", "Survey", np.linspace(1,1750,1750))
+    dendrogram_plot_test(matrix_q17, "Q17_budget", "Survey", np.linspace(1,data_length,data_length))
     # Switching
-    dendrogram_plot_test(matrix_q31, "Q31_Switching", "Survey", np.linspace(1,1750,1750))
+    dendrogram_plot_test(matrix_q31, "Q31_Switching", "Survey", np.linspace(1,data_length,data_length))
 
 
 # Number of clusters for each k-means
@@ -606,9 +607,9 @@ plt.colorbar()
 plt.show()
 
 # Dendrogram
-dendrogram_plot_test(summed_affinity_matrix, "mixed_", "survey", np.linspace(1,1750,1750))
+dendrogram_plot_test(summed_affinity_matrix, "mixed_", "survey", np.linspace(1,data_length,data_length))
 # Dendrogram
-dendrogram_plot_test(summed_select_affinity_matrix, "mixed_", "survey", np.linspace(1,1750,1750))
+dendrogram_plot_test(summed_select_affinity_matrix, "mixed_", "survey", np.linspace(1,data_length,data_length))
 
 
 
